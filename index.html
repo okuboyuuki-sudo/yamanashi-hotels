@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<!-- iPadなどの端末幅に合わせるための必須タグ -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>山梨の宿リスト</title>
+<style>
+  /* 基本リセット */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    background-color: #f0f2f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+    color: #333;
+    -webkit-text-size-adjust: 100%; /* iPadでのフォントサイズ自動調整を防ぐ */
+  }
+
+  /* iPad第10世代（縦820px）に最適化したメインコンテナ */
+  .container {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+  }
+
+  header {
+    background-color: #2c3e50;
+    color: #ffffff;
+    padding: 20px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  .list-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* カード本体：iPad画面で窮屈にならないように高さを自動（auto）に変更 */
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: row;
+    min-height: 240px; 
+    border: 1px solid #e1e4e8;
+  }
+
+  /* 左側（写真エリア） */
+  .card-left {
+    width: 250px;
+    flex-shrink: 0; 
+    position: relative;
+    background-color: #e9ecef;
+  }
+
+  .card-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  .tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(231, 76, 60, 0.95);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    z-index: 10;
+  }
+
+  /* 中央（詳細エリア）情報が消えないように折り返しを許可 */
+  .card-center {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .hotel-name {
+    font-size: 20px;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-weight: bold;
+    line-height: 1.4;
+    word-wrap: break-word; /* 長い名前でも折り返す */
+  }
+
+  .stars {
+    color: #f39c12;
+    font-size: 18px;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+
+  .info-list {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .info-item {
+    font-size: 14px;
+    color: #495057;
+    line-height: 1.5;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 4px solid #ced4da;
+  }
+
+  .info-item.highlight {
+    border-left-color: #3498db;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  .rooms-left {
+    background-color: #fdf2e9;
+    color: #d35400;
+    border: 1px solid #e67e22;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: auto; /* 下部に押しやる */
+    align-self: flex-start;
+  }
+
+  /* 右側（評価＆料金エリア） */
+  .card-right {
+    width: 200px;
+    flex-shrink: 0;
+    padding: 20px;
+    border-left: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #fafbfc;
+    text-align: right;
+  }
+
+  .rating-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .score-badge {
+    background-color: #2980b9;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  .reviews {
+    font-size: 13px;
+    color: #7f8c8d;
+  }
+
+  .price-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .price-label {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-bottom: 4px;
+  }
+
+  .price {
+    font-size: 26px;
+    font-weight: bold;
+    color: #c0392b;
+  }
+
+  .footer-text {
+    font-size: 12px;
+    color: #95a5a6;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>山梨の宿リスト</h1>
+  </header>
+  
+  <div class="list-container" id="hotel-list">
+    <!-- JavaScriptで動的にカードを生成 -->
+  </div>
+</div>
+
+<script>
+  // 宿データ（新しく追加した駅名・ポイント情報を含む）
+  const hotels = [
+    { name: "翠峰閣（すいほうかく）", price: "¥18,500", reviews: 342, rating: 4.2, rooms: 2, tag: "朝食無料", station: "雲海峡駅 徒歩10分", point: "雲海を望む露天風呂が自慢の和風旅館", img: "宿①.jpeg" },
+    { name: "湖畔亭 星の鏡", price: "¥24,000", reviews: 891, rating: 4.7, rooms: 1, tag: "キャンセル無料", station: "星見湖畔駅 バス15分", point: "夜は満天の星空を湖面に映すロマンチックな宿", img: "宿②.jpeg" },
+    { name: "フォレストロッジ 木漏れ日", price: "¥8,800", reviews: 156, rating: 3.8, rooms: 4, tag: "直前割引！20%OFF", station: "緑風林駅 徒歩5分", point: "森林浴を満喫できる木の温もりあふれるロッジ", img: "宿③.jpeg" },
+    { name: "葡萄の丘ヴィラ", price: "¥32,000", reviews: 412, rating: 4.5, rooms: 3, tag: "ウェルカムワイン付き", station: "ワインの郷駅 車で5分", point: "見渡す限りのブドウ畑に囲まれたリゾートヴィラ", img: "宿④.jpeg" },
+    { name: "湯煙旅館 茜（あかね）", price: "¥15,000", reviews: 620, rating: 4.1, rooms: 5, tag: "今すぐ予約！", station: "夕日ヶ丘温泉駅 徒歩3分", point: "レトロな和室と縁側で夕焼けを楽しむ温泉宿", img: "宿⑤.jpeg" },
+    { name: "ホテル・アルプスの風", price: "¥12,500", reviews: 1204, rating: 4.0, rooms: 2, tag: "クーポン適用可", station: "白銀岳駅 シャトルバス20分", point: "高原の澄んだ空気と洋風の佇まいが魅力", img: "宿⑥.jpeg" },
+    { name: "隠れ家リゾート 月夜見", price: "¥45,000", reviews: 88, rating: 4.9, rooms: 1, tag: "プレミアム施設", station: "幻竹林駅 徒歩15分", point: "竹林にひっそり佇む完全プライベート空間", img: "宿⑦.jpeg" },
+    { name: "ゲストハウス 山林", price: "¥4,500", reviews: 230, rating: 3.5, rooms: 5, tag: "コスパ最高", station: "山里口駅 徒歩8分", point: "旅人同士の交流が生まれるアットホームなラウンジ", img: "宿⑧.jpeg" },
+    { name: "ペンション ピーチブロッサム", price: "¥9,500", reviews: 175, rating: 4.3, rooms: 2, tag: "自家製ジャムの朝食", station: "桃源郷駅 徒歩12分", point: "四季折々の花々と手作りジャムが人気のペンション", img: "宿⑨.jpeg" },
+    { name: "渓谷の宿 瀬音（せおと）", price: "¥21,000", reviews: 503, rating: 4.6, rooms: 1, tag: "ポイント10倍", station: "深緑渓谷駅 バス30分", point: "エメラルドグリーンの川を望む吊り橋が目印", img: "宿⑩.jpeg" },
+    { name: "星空キャンプリゾート", price: "¥14,000", reviews: 80, rating: 4.4, rooms: 4, tag: "手ぶらでBBQ", station: "星降る森駅 徒歩20分", point: "手ぶらで贅沢なグランピング体験を満喫", img: "宿⑪.jpeg" },
+    { name: "旅館 雲海", price: "¥28,000", reviews: 670, rating: 4.5, rooms: 2, tag: "夕食お部屋食", station: "天空橋駅 ケーブルカー10分", point: "窓枠を額縁に見立てた山並みの絶景がお出迎え", img: "宿⑫.jpeg" },
+    { name: "レイクビューホテル 蒼", price: "¥17,800", reviews: 950, rating: 4.1, rooms: 3, tag: "タイムセール中", station: "青水湖駅 徒歩2分", point: "モダンな白い外観と湖のコントラストが美しい", img: "宿⑬.jpeg" },
+    { name: "温泉宿 笹の葉", price: "¥11,000", reviews: 315, rating: 3.9, rooms: 5, tag: "大浴場・サウナあり", station: "笹笛駅 徒歩7分", point: "笹林のさらさらという音に癒される露天岩風呂", img: "宿⑭.jpeg" },
+    { name: "オーベルジュ 山の恵み", price: "¥38,000", reviews: 142, rating: 4.8, rooms: 1, tag: "本日限定価格", station: "恵み平駅 車で10分", point: "地元食材をふんだんに使った絶品フレンチを堪能", img: "宿⑮.jpeg" },
+    { name: "太陽の里 休暇村", price: "¥10,500", reviews: 1530, rating: 4.0, rooms: 2, tag: "ファミリー向け", station: "陽だまり原駅 徒歩15分", point: "ファミリーで一日中遊べる広大な敷地とアスレチック", img: "宿⑯.jpeg" },
+    { name: "ヴィラ・ルミエール", price: "¥26,000", reviews: 210, rating: 4.5, rooms: 3, tag: "駐車場無料", station: "夜景坂駅 徒歩10分", point: "ガラス張りのリビングから街の煌めきを独り占め", img: "宿⑰.jpeg" },
+    { name: "古民家ステイ 囲炉裏", price: "¥16,000", reviews: 55, rating: 4.7, rooms: 1, tag: "一棟貸し", station: "古里村駅 徒歩5分", point: "薪がはぜる大きな囲炉裏を囲む一棟貸しステイ", img: "宿⑱.jpeg" },
+    { name: "ホテル 桔梗の郷", price: "¥9,000", reviews: 480, rating: 3.7, rooms: 4, tag: "無料Wi-Fi", station: "桔梗町駅 徒歩3分", point: "大正ロマンの風情漂うレトロクラシックな空間", img: "宿⑲.jpeg" },
+    { name: "絶景の宿 鷹の巣", price: "¥55,000", reviews: 112, rating: 4.9, rooms: 1, tag: "贅沢ステイ", station: "鷹見台駅 バス40分", point: "高台から山々と湖を見下ろすインフィニティ風呂", img: "宿⑳.jpeg" }
+  ];
+
+  // 星を生成する関数
+  function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    let starsHtml = "";
+    for(let i=0; i<5; i++) {
+      starsHtml += (i < fullStars) ? "★" : "☆";
+    }
+    return starsHtml;
+  }
+
+  // 宿リストを描画する関数
+  function renderHotels() {
+    const listContainer = document.getElementById("hotel-list");
+    listContainer.innerHTML = "";
+
+    hotels.forEach((hotel) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      
+      // URIエンコードをかけて日本語ファイル名のエラーを防ぐ（GitHub Pages対応）
+      const encodedImgSrc = encodeURI("./" + hotel.img);
+      const fallbackUrl = "https://via.placeholder.com/250x240/eaeaea/888888?text=No+Image";
+
+      card.innerHTML = `
+        <div class="card-left">
+          <span class="tag">${hotel.tag}</span>
+          <img src="${encodedImgSrc}" alt="${hotel.name}の写真" onerror="this.onerror=null; this.src='${fallbackUrl}';">
+        </div>
+        <div class="card-center">
+          <h2 class="hotel-name">${hotel.name}</h2>
+          <div class="stars">${renderStars(hotel.rating)}</div>
+          <div class="info-list">
+            <div class="info-item">📍 最寄駅：${hotel.station}</div>
+            <div class="info-item highlight">✨ ${hotel.point}</div>
+          </div>
+          <div class="rooms-left">残り${hotel.rooms}部屋</div>
+        </div>
+        <div class="card-right">
+          <div class="rating-box">
+            <span class="score-badge">${hotel.rating.toFixed(1)}</span>
+            <span class="reviews">${hotel.reviews}件の口コミ</span>
+          </div>
+          <div class="price-box">
+            <span class="price-label">1泊の宿代</span>
+            <span class="price">${hotel.price}</span>
+            <span class="footer-text">税・サ込み</span>
+          </div>
+        </div>
+      `;
+      listContainer.appendChild(card);
+    });
+  }
+
+  // 初期レンダリング実行
+  renderHotels();
+</script>
+</body>
+</html>
